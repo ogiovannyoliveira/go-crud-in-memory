@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -41,5 +42,25 @@ func FindAll(app Application) http.HandlerFunc {
 		}
 
 		SendJSON(w, Response{Data: users}, http.StatusOK)
+	}
+}
+
+func FindByID(app Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idParam := chi.URLParam(r, "id")
+
+		uid, err := uuid.FromString(idParam)
+		if err != nil {
+			SendJSON(w, Response{Error: "ID format is not a UUID."}, http.StatusBadRequest)
+			return
+		}
+
+		user, ok := app.Data[ID(uid)]
+		if !ok {
+			SendJSON(w, Response{Error: "Could not find user."}, http.StatusNotFound)
+			return
+		}
+
+		SendJSON(w, Response{Data: NewUserResponse(ID(uid), user)}, http.StatusOK)
 	}
 }

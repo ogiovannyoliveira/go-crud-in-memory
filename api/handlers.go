@@ -17,6 +17,7 @@ func NewHandler(app Application) http.Handler {
 		r.Route("/users", func(r chi.Router) {
 			r.Post("/", Insert(app))
 			r.Get("/", FindAll(app))
+			r.Get("/{id}", FindByID(app))
 		})
 	})
 
