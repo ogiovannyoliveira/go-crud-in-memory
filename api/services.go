@@ -25,11 +25,10 @@ func Insert(app Application) http.HandlerFunc {
 		id := ID(uuid.NewV4())
 		app.Data[id] = newUser
 
-		SendJSON(
-			w,
-			Response{Data: NewUserResponse(id, newUser)},
-			http.StatusCreated,
-		)
+		SendJSON(w, Response{
+			Data:    NewUserResponse(id, newUser),
+			Message: "User saved successfully.",
+		}, http.StatusCreated)
 	}
 }
 
@@ -97,6 +96,33 @@ func Update(app Application) http.HandlerFunc {
 		}
 
 		app.Data[ID(uid)] = user
-		SendJSON(w, Response{Data: NewUserResponse(ID(uid), user)}, http.StatusOK)
+		SendJSON(w, Response{
+			Data:    NewUserResponse(ID(uid), user),
+			Message: "User updated successfully.",
+		}, http.StatusOK)
+	}
+}
+
+func Delete(app Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idParam := chi.URLParam(r, "id")
+
+		uid, err := uuid.FromString(idParam)
+		if err != nil {
+			SendJSON(w, Response{Error: "ID format is not a UUID."}, http.StatusBadRequest)
+			return
+		}
+
+		user, ok := app.Data[ID(uid)]
+		if !ok {
+			SendJSON(w, Response{Error: "Could not find user."}, http.StatusNotFound)
+			return
+		}
+
+		delete(app.Data, ID(uid))
+		SendJSON(w, Response{
+			Data:    NewUserResponse(ID(uid), user),
+			Message: "User deleted successfully.",
+		}, http.StatusOK)
 	}
 }
