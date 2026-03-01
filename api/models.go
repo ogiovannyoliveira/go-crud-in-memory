@@ -57,7 +57,7 @@ func (u User) Validate() error {
 	if u.Biography == "" {
 		return errors.New("Biography is required.")
 	}
-	if len(u.Biography) < 2 || len(u.Biography) > 20 {
+	if len(u.Biography) < 20 || len(u.Biography) > 450 {
 		return errors.New("Biography should have length between 20 and 450 characters.")
 	}
 
