@@ -20,11 +20,7 @@ func main() {
 }
 
 func run() error {
-	var app api.Application
-
-	initializeDB := make(map[api.ID]api.User)
-	app.Data = initializeDB
-
+	app := api.Application{Data: map[api.ID]api.User{}}
 	handler := api.NewHandler(app)
 
 	s := http.Server{

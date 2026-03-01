@@ -31,3 +31,15 @@ func Insert(app Application) http.HandlerFunc {
 		)
 	}
 }
+
+func FindAll(app Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		users := make([]UserResponse, 0, len(app.Data))
+
+		for id, body := range app.Data {
+			users = append(users, NewUserResponse(id, body))
+		}
+
+		SendJSON(w, Response{Data: users}, http.StatusOK)
+	}
+}

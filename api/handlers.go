@@ -16,6 +16,7 @@ func NewHandler(app Application) http.Handler {
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/users", func(r chi.Router) {
 			r.Post("/", Insert(app))
+			r.Get("/", FindAll(app))
 		})
 	})
 
