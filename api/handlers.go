@@ -18,6 +18,7 @@ func NewHandler(app Application) http.Handler {
 			r.Post("/", Insert(app))
 			r.Get("/", FindAll(app))
 			r.Get("/{id}", FindByID(app))
+			r.Put("/{id}", Update(app))
 		})
 	})
 
