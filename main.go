@@ -20,8 +20,12 @@ func main() {
 }
 
 func run() error {
-	var db api.Application
-	handler := api.NewHandler(&db)
+	var app api.Application
+
+	initializeDB := make(map[api.ID]api.User)
+	app.Data = initializeDB
+
+	handler := api.NewHandler(app)
 
 	s := http.Server{
 		Addr:         ":8080",

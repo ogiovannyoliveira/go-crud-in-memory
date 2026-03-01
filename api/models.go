@@ -1,12 +1,37 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
 
 	uuid "github.com/satori/go.uuid"
 )
 
 type ID uuid.UUID
+
+func (id ID) UUID() uuid.UUID {
+	return uuid.UUID(id)
+}
+
+func (id ID) MarshalJSON() ([]byte, error) {
+	s := id.UUID().String()
+	return json.Marshal(s)
+}
+
+func (id *ID) UnmarshalJSON(b []byte) error {
+	var s string
+	if err := json.Unmarshal(b, &s); err != nil {
+		return err
+	}
+
+	u, err := uuid.FromString(s)
+	if err != nil {
+		return err
+	}
+
+	*id = ID(u)
+	return nil
+}
 
 type User struct {
 	FirstName string `json:"first_name"`
@@ -43,7 +68,24 @@ type Application struct {
 	Data map[ID]User
 }
 
+type UserResponse struct {
+	ID        ID     `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Biography string `json:"biography"`
+}
+
+func NewUserResponse(id ID, user User) UserResponse {
+	return UserResponse{
+		ID:        id,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Biography: user.Biography,
+	}
+}
+
 type Response struct {
-	Error string `json:"error,omitempty"`
-	Data  any    `json:"data,omitempty"`
+	Message string `json:"message,omitempty"`
+	Error   string `json:"error,omitempty"`
+	Data    any    `json:"data,omitempty"`
 }

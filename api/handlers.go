@@ -6,11 +6,17 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func NewHandler(db *Application) http.Handler {
+func NewHandler(app Application) http.Handler {
 	r := chi.NewMux()
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		SendJSON(w, Response{Data: "System is healthy and running"}, http.StatusOK)
+	})
+
+	r.Route("/api", func(r chi.Router) {
+		r.Route("/users", func(r chi.Router) {
+			r.Post("/", Insert(app))
+		})
 	})
 
 	return r
